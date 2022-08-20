@@ -1,8 +1,6 @@
 package com.movieproject.movieproject.response;
 
 import com.movieproject.movieproject.entity.User;
-import com.movieproject.movieproject.repos.UserRepository;
-import com.movieproject.movieproject.services.UserService;
 import lombok.Data;
 
 @Data
