@@ -15,7 +15,5 @@ public class Movie {
     String movie_name;
     String director;
     Integer imdb_number;
-
-
-
+    String image;
 }
