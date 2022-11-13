@@ -1,9 +1,15 @@
 package com.movieproject.movieproject.controller;
 
 
+import com.movieproject.movieproject.converter.UserConverter;
 import com.movieproject.movieproject.entity.User;
+import com.movieproject.movieproject.exceptions.UserNotFoundException;
+import com.movieproject.movieproject.request.CreateUserRequest;
+import com.movieproject.movieproject.request.UpdateUserRequest;
 import com.movieproject.movieproject.response.UserResponse;
 import com.movieproject.movieproject.services.UserService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,27 +19,57 @@ import java.util.List;
 public class UserController {
 
     private UserService userService;
+    private UserConverter userConverter;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserConverter userConverter) {
         this.userService = userService;
+        this.userConverter = userConverter;
     }
 
     @GetMapping
-    public List<UserResponse> getAllUsers() {
-        return userService.getAllUsers().stream().map(u -> new UserResponse(u)).toList();
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
+        List<UserResponse> result = userService.getAllUsers()
+                .stream()
+                .map(user -> userConverter.convertToUserResponse(user))
+                .toList();
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @PostMapping
-    public User createUser(@RequestBody User newUser) {
-        return userService.saveOneUser(newUser);
+    public ResponseEntity<Void> createUser(@RequestBody CreateUserRequest request) {
+        User user = userService.saveOneUser(userConverter.convertToUser(request));
+        if (user != null)
+            return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @GetMapping("/{userId}")
-    public UserResponse getOneUser(@PathVariable Long userId){
+    public UserResponse getOneUser(@PathVariable Long userId) {
         User user = userService.getOneUser(userId);
-        if(user == null){
+        if (user == null) {
             return null;
         }
-        return new UserResponse(user);
+        return userConverter.convertToUserResponse(user);
     }
+
+    @PutMapping("/{userId}")
+    public ResponseEntity<UserResponse> updateOneUser(@PathVariable Long userId, @RequestBody UpdateUserRequest request) {
+        User user = userService.updateOneUser(userId, userConverter.convertToUser(request));
+        UserResponse userResponse = userConverter.convertToUserResponse(user);
+        if (user != null)
+            return new ResponseEntity<>(userResponse,HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @DeleteMapping("/{userId}")
+    public void deleteOneUser(@PathVariable Long userId) {
+        userService.deleteById(userId);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    private void handleUserNotFound() {
+
+    }
+
 }

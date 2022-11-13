@@ -8,12 +8,10 @@ public class UserResponse {
 
     private Long id;
     private String username;
-    private String rolename;
 
     public UserResponse(User entity) {
         this.id = entity.getId();
         this.username = entity.getUsername();
-        this.rolename = String.valueOf(entity.getRoles());
     }
 
 }
