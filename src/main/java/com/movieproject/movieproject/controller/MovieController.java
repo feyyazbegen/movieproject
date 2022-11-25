@@ -3,7 +3,7 @@ package com.movieproject.movieproject.controller;
 import com.movieproject.movieproject.entity.Movie;
 import com.movieproject.movieproject.response.MovieResponse;
 import com.movieproject.movieproject.services.MovieService;
-import com.movieproject.movieproject.services.OMDBApiServiceImpl;
+import com.movieproject.movieproject.services.impl.OMDBApiServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,12 +25,12 @@ public class MovieController {
     }
 
     @GetMapping("/{movieId}")
-    public MovieResponse getOneMovie(@PathVariable Long movieId) {
+    public ResponseEntity<MovieResponse> getOneMovie(@PathVariable Long movieId) {
         Movie movie = movieService.getOneMovie(movieId);
         if(movie == null){
             return null;
         }
-        return new MovieResponse(movie);
+        return new ResponseEntity<>(HttpStatus.OK);
 
     }
 }

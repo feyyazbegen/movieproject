@@ -44,12 +44,12 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public UserResponse getOneUser(@PathVariable Long userId) {
+    public ResponseEntity<UserResponse> getOneUser(@PathVariable Long userId) {
         User user = userService.getOneUser(userId);
         if (user == null) {
-            return null;
+           return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return userConverter.convertToUserResponse(user);
+        return new ResponseEntity<>( userConverter.convertToUserResponse(user),HttpStatus.OK);
     }
 
     @PutMapping("/{userId}")
@@ -62,8 +62,9 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}")
-    public void deleteOneUser(@PathVariable Long userId) {
+    public ResponseEntity<Void> deleteOneUser(@PathVariable Long userId) {
         userService.deleteById(userId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @ExceptionHandler(UserNotFoundException.class)

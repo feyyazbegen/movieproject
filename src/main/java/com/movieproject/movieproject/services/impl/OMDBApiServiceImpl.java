@@ -1,6 +1,7 @@
-package com.movieproject.movieproject.services;
+package com.movieproject.movieproject.services.impl;
 
 import com.movieproject.movieproject.response.OMDBApiResponse;
+import com.movieproject.movieproject.services.OMDBApiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
